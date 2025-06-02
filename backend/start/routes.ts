@@ -26,8 +26,7 @@ router.get('/', async () => {
 //   router.post('login', [AuthController, 'login'])
 
 // }).prefix('user')
-  // version new :
-  
+
 // import router from '@adonisjs/core/services/router'
 
 // router.get('/', async () => {
@@ -36,8 +35,7 @@ router.get('/', async () => {
 //   }
 // })
 
-
-
+// // Formulaire id
 
 router.group(() => {
   router.post('register', [AuthController, 'register'])

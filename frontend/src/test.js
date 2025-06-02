@@ -54,7 +54,7 @@ function Test() {
       </main>
 
       <footer className="App-footer">
-        <p>Développé par Sabrina</p>
+        <p><i>Développé par Sabrina et Naylis pour la découverte de React</i></p>
       </footer>
 
       <button className="logout-button" onClick={handleLogout}> Se déconnecter</button>
