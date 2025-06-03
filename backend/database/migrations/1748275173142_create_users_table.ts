@@ -10,6 +10,8 @@ export default class CreateUsersTable extends BaseSchema {
       table.string('full_name')
       table.string('email').notNullable().unique()
       table.string('password').notNullable()
+      table.enum('role', ['admin', 'user']).defaultTo('user')
+
      
       table.timestamp('created_at', { useTz: true }).defaultTo(this.db.raw('CURRENT_TIMESTAMP'))
       table.timestamp('updated_at', { useTz: true }).defaultTo(this.db.raw('CURRENT_TIMESTAMP'))

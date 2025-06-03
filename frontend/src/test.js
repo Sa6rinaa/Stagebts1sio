@@ -1,8 +1,11 @@
 import './App.css'
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'  
 
 function Test() {
+  const navigate = useNavigate() 
   const [userName, setUserName] = useState('')
+  const [userRole, setUserRole] = useState('')
 
   useEffect(() => {
     const token = localStorage.getItem('token')
@@ -16,6 +19,7 @@ function Test() {
       try {
         const parsedUser = JSON.parse(user)
         setUserName(parsedUser.fullName || '')
+        setUserRole(parsedUser.role || '') // 👈 On récupère le rôle ici
       } catch (err) {
         console.error('Erreur de parsing du user', err)
       }
@@ -37,7 +41,7 @@ function Test() {
           className="logo-img"
           title="Logo React"
         />
-        <h1>Bienvenue {userName && `, ${userName}`} </h1>
+        <h1>Bienvenue {userName && `, ${userName}`}</h1>
         <p>Site React avec une interface moderne et fluide.</p>
       </header>
 
@@ -50,6 +54,16 @@ function Test() {
           <p>
             L'objectif est de proposer des fonctionnalités simples, modernes et faciles à utiliser.
           </p>
+
+          {userRole === 'admin' && (
+  <button
+    className="admin-button"
+    onClick={() => navigate('/admin/users')}  // <--- redirection ici
+  >
+    Gérer les utilisateurs
+  </button>
+)}
+
         </section>
       </main>
 
@@ -57,7 +71,9 @@ function Test() {
         <p><i>Développé par Sabrina et Naylis pour la découverte de React</i></p>
       </footer>
 
-      <button className="logout-button" onClick={handleLogout}> Se déconnecter</button>
+      <button className="logout-button" onClick={handleLogout}>
+        Se déconnecter
+      </button>
     </div>
   )
 }

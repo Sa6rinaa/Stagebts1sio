@@ -1,7 +1,5 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { registerValidator } from '#validators/auth'
-import { loginValidator } from '#validators/login'
-
 import User from '#models/user'
 
 export default class AuthController {
@@ -34,42 +32,21 @@ export default class AuthController {
     }
   }
 
+  async login({ request, response, auth }: HttpContext) {
+    const { email, password } = request.only(['email', 'password'])
 
-  async login({ request, response }: HttpContext) {
-    try {
-      const payload = await request.validateUsing(loginValidator)
-  
-      const user = await User.findBy('email', payload.email)
-      if (!user) {
-        return response.badRequest({ message: 'Identifiants invalides' })
-      }
-  
-      const isPasswordValid = await user.verifyPassword(payload.password)
-      if (!isPasswordValid) {
-        return response.badRequest({ message: 'Identifiants invalides' })
-      }
-  
-      const token = await User.accessTokens.create(user)
-  
-      // Retourne token + infos utilisateur
-      return response.ok({
-        token,
-        user: {
-          id: user.id,
-          fullName: user.fullName,
-          email: user.email,
-        
-        }
-      })
-    } catch (error) {
-      console.error(error)
-  
-      if (error.messages) {
-        return response.badRequest({ message: 'Données invalides', errors: error.messages })
-      }
-  
-      return response.internalServerError({ message: 'Erreur lors de la connexion' })
-    }
+    const user = await User.verifyCredentials(email, password)
+    const token = await User.accessTokens.create(user)
+
+    return response.ok({
+      token: token,
+      user: {
+        id: user.id,
+        email: user.email,
+        fullName: user.fullName,
+        role: user.role,
+      },
+    })
   }
 }
 
