@@ -1,17 +1,12 @@
 import { DateTime } from 'luxon'
 import Hash from '@adonisjs/core/services/hash'
-import { compose } from '@adonisjs/core/helpers'
 import { BaseModel, column } from '@adonisjs/lucid/orm'
-import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import { DbAccessTokensProvider } from '@adonisjs/auth/access_tokens'
+import type { ModelObject } from '@adonisjs/lucid/types/model'
 
-// Mixin pour la gestion de l'auth (email + password)
-const AuthFinder = withAuthFinder(() => Hash.use('scrypt'), {
-  uids: ['email'], // champs utilisé pour identification
-  passwordColumnName: 'password', // colonne du mot de passe dans la table
-})
+export default class User extends BaseModel {
+  static table = 'users'
 
-export default class User extends compose(BaseModel, AuthFinder) {
   @column({ isPrimary: true })
   declare id: number
 
@@ -36,4 +31,22 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   // Gestion des access tokens via la table dédiée d'Adonis
   static accessTokens = DbAccessTokensProvider.forModel(User)
+
+  static async verifyCredentials(email: string, password: string) {
+    const user = await this.query().where('email', email).firstOrFail()
+    const isValid = await Hash.verify(user.password, password)
+    
+    if (!isValid) {
+      throw new Error('Invalid credentials')
+    }
+    
+    return user
+  }
+
+  static async create(data: Partial<ModelObject<User>>) {
+    if (data.password) {
+      data.password = await Hash.make(data.password)
+    }
+    return await super.create(data)
+  }
 }

@@ -20,9 +20,8 @@ const Login = () => {
       } else {
         window.location.href = '/Test'
       }
-
+      
       alert('Connexion réussie !')
-      window.location.href = '/Test'
     } catch (err) {
       setError(err.response?.data?.message || 'Erreur de connexion')
     }
